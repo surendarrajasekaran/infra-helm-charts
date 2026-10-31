@@ -22,7 +22,7 @@
     },
     "source": "policy-fallback"
   },
-  "public_url": "",
+  "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
   "source_commit": "77c8ee068cf0183a4c5c16125595db41389703bb",
   "target": "idea-board-aws-test"
 }
