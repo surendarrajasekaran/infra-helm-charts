@@ -50,8 +50,8 @@ spec:
     metadata:
       annotations:
         idea-board/database-version: ''
-        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
-        idea-board/gitops-release: bootstrap-77c8ee0-20261031
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436334888188000@sha256:97a44a93d05905dd1ab9dc037a93aee9d897dd087f5899f37025fd32c75aaeca
+        idea-board/gitops-release: rollback-drill-20261031
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-backend
@@ -83,7 +83,7 @@ spec:
         envFrom:
         - secretRef:
             name: idea-board-migration
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436334888188000@sha256:97a44a93d05905dd1ab9dc037a93aee9d897dd087f5899f37025fd32c75aaeca
         imagePullPolicy: IfNotPresent
         name: migrate
         resources:
@@ -117,7 +117,7 @@ spec:
           runAsGroup: 10001
           runAsNonRoot: true
           runAsUser: 10001
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436334888188000@sha256:97a44a93d05905dd1ab9dc037a93aee9d897dd087f5899f37025fd32c75aaeca
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
@@ -157,4 +157,4 @@ spec:
           readOnly: true
         env:
         - name: RELEASE_ID
-          value: bootstrap-77c8ee0-20261031
+          value: rollback-drill-20261031
