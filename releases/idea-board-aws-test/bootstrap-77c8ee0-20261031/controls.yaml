@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: workload-budget
+  namespace: idea-board-test
+  annotations:
+    argocd.argoproj.io/sync-wave: '-10'
+spec:
+  hard:
+    limits.cpu: '16'
+    limits.memory: 8Gi
+    pods: '20'
+    requests.cpu: '8'
+    requests.memory: 8Gi
+    services.loadbalancers: '1'
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: idea-board-test
+  annotations:
+    argocd.argoproj.io/sync-wave: '-10'
+spec:
+  egress: []
+  ingress: []
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: idea-board-backend
+  namespace: idea-board-test
+  annotations:
+    argocd.argoproj.io/sync-wave: '-10'
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    - ipBlock:
+        cidr: 169.254.20.10/32
+    - ipBlock:
+        cidr: 169.254.169.254/32
+  - ports:
+    - port: 5432
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 10.40.21.0/24
+    - ipBlock:
+        cidr: 10.40.22.0/24
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: idea-board-frontend
+    ports:
+    - port: 8000
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: idea-board-backend
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: idea-board-frontend
+  namespace: idea-board-test
+  annotations:
+    argocd.argoproj.io/sync-wave: '-10'
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    - ipBlock:
+        cidr: 169.254.20.10/32
+    - ipBlock:
+        cidr: 169.254.169.254/32
+  - ports:
+    - port: 8000
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: idea-board-backend
+  ingress:
+  - ports:
+    - port: 8080
+      protocol: TCP
+    - port: 8443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: idea-board-frontend
+  policyTypes:
+  - Ingress
+  - Egress

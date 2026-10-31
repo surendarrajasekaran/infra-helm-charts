@@ -1,0 +1,28 @@
+{
+  "cloud": "aws",
+  "environment": "test",
+  "hashes": {
+    "backend.yaml": "a1c1946bdafea78bc07a59a1d219466a58df030945808e5e9d162a47fbbd6ecc",
+    "controls.yaml": "994e7250b6b8f6701afefb54c39313433b88701e2d0e87ddc8a0a27ffb67542b",
+    "frontend.yaml": "c6bde179a5c573b3ae1486f976e0a5ddb10de6413346a43da831764a29d79c05"
+  },
+  "id": "bootstrap-77c8ee0-20261031",
+  "images": {
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436334888188000@sha256:97a44a93d05905dd1ab9dc037a93aee9d897dd087f5899f37025fd32c75aaeca"
+  },
+  "name": "idea-board",
+  "profile": {
+    "environment": "test",
+    "profile": {
+      "cpu_request": "250m",
+      "memory_request": "256Mi",
+      "rationale": "Conservative policy defaults; no live AI proposal available.",
+      "replicas": 1
+    },
+    "source": "policy-fallback"
+  },
+  "public_url": "",
+  "source_commit": "77c8ee068cf0183a4c5c16125595db41389703bb",
+  "target": "idea-board-aws-test"
+}
