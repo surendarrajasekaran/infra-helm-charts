@@ -52,7 +52,7 @@ spec:
     metadata:
       annotations:
         idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436334888188000@sha256:97a44a93d05905dd1ab9dc037a93aee9d897dd087f5899f37025fd32c75aaeca
-        idea-board/gitops-release: rollback-drill-20261031
+        idea-board/gitops-release: recovery-1793509010408156000
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-frontend
@@ -113,7 +113,7 @@ spec:
         - name: TLS_LISTEN
           value: ''
         - name: RELEASE_ID
-          value: rollback-drill-20261031
+          value: recovery-1793509010408156000
         livenessProbe:
           httpGet:
             path: /health/live
