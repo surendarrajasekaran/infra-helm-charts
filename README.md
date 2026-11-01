@@ -26,3 +26,9 @@ Secrets, Terraform state, credentials and certificates must never be committed h
 For setup, private administration, provider choices and limitations see the [GitOps guide](https://github.com/surendarrajasekaran/om-idea-board/blob/main/docs/gitops.md). Changes to the health implementation should first be reviewed and tested in the application repository, then synchronized into `automation/`. Changing chart defaults requires a source pipeline release to regenerate manifests. Editing an archived snapshot invalidates its checksum and prevents recovery.
 
 Initial target: `idea-board-aws-test`, namespace `idea-board-test`, AWS `mit-qa` / `us-west-2`. The test board is anonymous and uses HTTP; use synthetic data. Argo's UI remains private.
+
+## Verified AWS test delivery — November 1, 2026
+
+[Source release pipeline](https://github.com/surendarrajasekaran/om-idea-board/actions/runs/41275785592) and [new-release health verification](https://github.com/surendarrajasekaran/infra-helm-charts/actions/runs/41276535583) passed. GitOps release commit `0015f83` was reconciled by Argo CD; health commit `6408d3e` records its exact frontend/backend version and create/read checks. The health window had 20 requests, zero failures and p95 153.21 ms. Assessments currently use explicit policy fallback until AI_API_KEY is configured. A prior deliberately incompatible image was recovered through Git, and verification data persisted.
+
+The app runs in AWS mit-qa / us-west-2 with private EKS/RDS and immutable private ECR images. The Argo UI is private, and the unused ApplicationSet controller has zero replicas. See the source repository's verification record for image digests, security checks and remaining GCP/live-AI work.
