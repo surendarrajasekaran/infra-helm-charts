@@ -1,0 +1,128 @@
+fullnameOverride: idea-board-backend
+containerName: backend
+image:
+  repository: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend
+  tag: git-ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1@sha256:74752d1ae9f811ebe66bf8154a4692cd2cb92569720924b9d06e798ee0c78f3a
+  pullPolicy: IfNotPresent
+workload:
+  enabled: true
+  kind: Deployment
+  replicaCount: 1
+  deployment:
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+containerPorts:
+- name: http
+  containerPort: 8000
+  protocol: TCP
+envFrom:
+- secretRef:
+    name: idea-board-database
+automountServiceAccountToken: false
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 512Mi
+initContainers:
+- name: migrate
+  image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+  imagePullPolicy: IfNotPresent
+  command:
+  - python
+  - -m
+  - app.migrate
+  envFrom:
+  - secretRef:
+      name: idea-board-migration
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+  volumeMounts:
+  - name: database-ca
+    mountPath: /etc/postgresql/ca
+    readOnly: true
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: '1'
+      memory: 512Mi
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: http
+  periodSeconds: 10
+  timeoutSeconds: 3
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: http
+  periodSeconds: 5
+  timeoutSeconds: 3
+startupProbe:
+  httpGet:
+    path: /health/live
+    port: http
+  periodSeconds: 5
+  failureThreshold: 30
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+terminationGracePeriodSeconds: 30
+volumes:
+- name: database-ca
+  secret:
+    secretName: idea-board-database-ca
+    defaultMode: 292
+volumeMounts:
+- name: database-ca
+  mountPath: /etc/postgresql/ca
+  readOnly: true
+podAnnotations:
+  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1@sha256:74752d1ae9f811ebe66bf8154a4692cd2cb92569720924b9d06e798ee0c78f3a
+  idea-board/database-version: ''
+  idea-board/gitops-release: ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1
+topologySpreadConstraints:
+- maxSkew: 1
+  topologyKey: kubernetes.io/hostname
+  whenUnsatisfiable: ScheduleAnyway
+  labelSelector:
+    matchLabels:
+      app.kubernetes.io/instance: idea-board-backend
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: '0'
+env:
+  RELEASE_ID: ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1
