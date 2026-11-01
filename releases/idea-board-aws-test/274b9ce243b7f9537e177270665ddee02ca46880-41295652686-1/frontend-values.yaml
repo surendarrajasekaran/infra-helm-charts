@@ -1,0 +1,108 @@
+fullnameOverride: idea-board-frontend
+containerName: frontend
+image:
+  repository: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend
+  tag: git-274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1@sha256:f5264f60f44f9c6bab4c3c48126637e3e83dff3ff353f9acd00c8d8c024f6477
+  pullPolicy: IfNotPresent
+workload:
+  enabled: true
+  kind: Deployment
+  replicaCount: 1
+  deployment:
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+service:
+  enabled: true
+  type: LoadBalancer
+  port: 80
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    idea-board/public-host: ''
+containerPorts:
+- name: http
+  containerPort: 8080
+  protocol: TCP
+env:
+  BACKEND_HOST: idea-board-backend
+  NGINX_ENVSUBST_FILTER: BACKEND_HOST|TLS_LISTEN|RELEASE_ID
+  TLS_LISTEN: ''
+  RELEASE_ID: 274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1
+automountServiceAccountToken: false
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 512Mi
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: http
+  periodSeconds: 10
+  timeoutSeconds: 3
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: http
+  periodSeconds: 5
+  timeoutSeconds: 3
+startupProbe:
+  httpGet:
+    path: /health/live
+    port: http
+  periodSeconds: 5
+  failureThreshold: 30
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+terminationGracePeriodSeconds: 30
+volumes:
+- name: nginx-config
+  emptyDir:
+    sizeLimit: 8Mi
+- name: nginx-cache
+  emptyDir:
+    sizeLimit: 64Mi
+- name: nginx-tmp
+  emptyDir:
+    sizeLimit: 16Mi
+volumeMounts:
+- name: nginx-config
+  mountPath: /etc/nginx/conf.d
+- name: nginx-cache
+  mountPath: /var/cache/nginx
+- name: nginx-tmp
+  mountPath: /tmp
+podAnnotations:
+  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1@sha256:f5264f60f44f9c6bab4c3c48126637e3e83dff3ff353f9acd00c8d8c024f6477
+  idea-board/gitops-release: 274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1
+topologySpreadConstraints:
+- maxSkew: 1
+  topologyKey: kubernetes.io/hostname
+  whenUnsatisfiable: ScheduleAnyway
+  labelSelector:
+    matchLabels:
+      app.kubernetes.io/instance: idea-board-frontend
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: '10'

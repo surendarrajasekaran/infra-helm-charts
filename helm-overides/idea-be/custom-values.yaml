@@ -2,7 +2,7 @@ fullnameOverride: idea-board-backend
 containerName: backend
 image:
   repository: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend
-  tag: git-56b646d9d6202261b2c4465e5e73cf7f8e5f7422-41294713160-1@sha256:dd0e7b988c4cec6f6f09072ad22a50bf6e8d042e6e7dc5fef755b820e56f6e3d
+  tag: git-274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1@sha256:e04c48583d455364e7e32d2b3f69df762019f6fa9fd842ca980450036d104bd7
   pullPolicy: IfNotPresent
 workload:
   enabled: true
@@ -112,9 +112,9 @@ volumeMounts:
   mountPath: /etc/postgresql/ca
   readOnly: true
 podAnnotations:
-  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-56b646d9d6202261b2c4465e5e73cf7f8e5f7422-41294713160-1@sha256:dd0e7b988c4cec6f6f09072ad22a50bf6e8d042e6e7dc5fef755b820e56f6e3d
+  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1@sha256:e04c48583d455364e7e32d2b3f69df762019f6fa9fd842ca980450036d104bd7
   idea-board/database-version: ''
-  idea-board/gitops-release: 56b646d9d6202261b2c4465e5e73cf7f8e5f7422-41294713160-1
+  idea-board/gitops-release: 274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1
 topologySpreadConstraints:
 - maxSkew: 1
   topologyKey: kubernetes.io/hostname
@@ -125,4 +125,4 @@ topologySpreadConstraints:
 commonAnnotations:
   argocd.argoproj.io/sync-wave: '0'
 env:
-  RELEASE_ID: 56b646d9d6202261b2c4465e5e73cf7f8e5f7422-41294713160-1
+  RELEASE_ID: 274b9ce243b7f9537e177270665ddee02ca46880-41295652686-1
