@@ -2,14 +2,14 @@
   "cloud": "aws",
   "environment": "test",
   "hashes": {
-    "backend.yaml": "49cf5a4e7c2e09f1bea4c10b97112d2e0201790a955486fcfa850b926e8e46df",
+    "backend.yaml": "ac7ba0f60d3621bb40854682a695aaeef5d20caf3373581f8a3c8325d87cb768",
     "controls.yaml": "994e7250b6b8f6701afefb54c39313433b88701e2d0e87ddc8a0a27ffb67542b",
-    "frontend.yaml": "21708cfc73a18dbab2683ddf79ff10c2181d80c354729547aa62b362e0daa606"
+    "frontend.yaml": "f50aef0a01fb744c49bbdb06127fc789187c72c1845cba68a1cdbe5a2ee82b58"
   },
-  "id": "f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2",
+  "id": "8819eef3fd42f3b0223728f43fad2ff63462ce38-41281809983-1",
   "images": {
-    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2@sha256:af21eb50ca9a2e94b4befde5b3b2a97077df258691a5f8723320a66761517beb",
-    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2@sha256:7d4e5480ef3aa6d5c4f4f8fe3574a1d178f9d11aee1cfa578c1df31ea99ed54e"
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-8819eef3fd42f3b0223728f43fad2ff63462ce38-41281809983-1@sha256:e314655684a4374d1b0d6cb3734cdf04cf9d62540e7f21f5c5fda0dcb290720c",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-8819eef3fd42f3b0223728f43fad2ff63462ce38-41281809983-1@sha256:0b475e3f5ad3a932afdff5676dc32c5c836db5c9a825c5acc025c3de69421a30"
   },
   "name": "idea-board",
   "profile": {
@@ -23,6 +23,6 @@
     "source": "policy-fallback"
   },
   "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
-  "source_commit": "f2f202a189c020d222b335c25db52eb2c82f5008",
+  "source_commit": "8819eef3fd42f3b0223728f43fad2ff63462ce38",
   "target": "idea-board-aws-test"
 }
