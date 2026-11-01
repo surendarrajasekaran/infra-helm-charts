@@ -1,0 +1,33 @@
+{
+  "cloud": "aws",
+  "delivery": "helm",
+  "environment": "test",
+  "hashes": {
+    "backend.yaml": "95ed7beff6a346fc8cc5667ce3bc6833d1c3a247ccc013665d5a3e1b6fe7a4ed",
+    "controls.yaml": "187d483dadcfe8ba4e2d51b33d3a5c418f3e8b31100a75a3dd9e7f6cb6eccc71",
+    "frontend.yaml": "4c011137792e368442db633710ce975d0e9fc82a5f8cd02ecc0e09da534c4f2a"
+  },
+  "helm_values_hashes": {
+    "backend-values.yaml": "77e2b0e0f0aa8d30f81f50101ae59a1be4294a5453d378d895d0326b1aecb515",
+    "frontend-values.yaml": "b521557a74b0941f55a91e6f83dca576fc003df91adc839310e44c10cbea8d1c"
+  },
+  "id": "de259833b6d8405b2af58ce59d9aa9a846b2a9da-41306661819-1",
+  "images": {
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-de259833b6d8405b2af58ce59d9aa9a846b2a9da-41306661819-1@sha256:89880dc082b963d4c43d0ec2af85d76ea7f28fcbdb69314af12e7f7f90a23a4d",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-de259833b6d8405b2af58ce59d9aa9a846b2a9da-41306661819-1@sha256:e2465884489ccc9eb9f1f38d4d0959d0f1423d51bf71be4d3df80f369ded4e64"
+  },
+  "name": "idea-board",
+  "profile": {
+    "environment": "test",
+    "profile": {
+      "cpu_request": "100m",
+      "memory_request": "128Mi",
+      "rationale": "Test environment requires only one replica and minimal resources to optimize cost, accepting lower performance for occasional users.",
+      "replicas": 1
+    },
+    "source": "live-ai"
+  },
+  "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
+  "source_commit": "de259833b6d8405b2af58ce59d9aa9a846b2a9da",
+  "target": "idea-board-aws-test"
+}
