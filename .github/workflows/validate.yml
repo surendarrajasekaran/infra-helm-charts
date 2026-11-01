@@ -2,9 +2,9 @@ name: Validate Helm configuration
 on:
   push:
     branches: [main]
-    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
   pull_request:
-    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
 permissions:
   contents: read
 jobs:
@@ -16,12 +16,12 @@ jobs:
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with: { version: v3.19.0 }
       - run: pip install -r automation/requirements.txt
-      - run: helm lint helm-common/nucleus -f helm-overides/idea-fe/custom-values.yaml
-      - run: helm lint helm-common/nucleus -f helm-overides/idea-be/custom-values.yaml
-      - run: helm lint helm-templates/argocd-app-controller -f bootstrap/idea-board-applications.yaml
+      - run: helm lint helm-templates/nucleus -f helm-overides/idea-fe/custom-values.yaml
+      - run: helm lint helm-templates/nucleus -f helm-overides/idea-be/custom-values.yaml
+      - run: helm lint helm-templates/argocd-app-controller -f helm-overides/argocd-app-controller/custom-values.yaml
       - name: Validate the two Argo Applications
         run: |
-          helm template idea-board-test-apps helm-templates/argocd-app-controller --namespace argocd -f bootstrap/idea-board-applications.yaml > /tmp/idea-board-applications.yaml
+          helm template idea-board-test-apps helm-templates/argocd-app-controller --namespace argocd -f helm-overides/argocd-app-controller/custom-values.yaml > /tmp/idea-board-applications.yaml
           python - <<'PY'
           import yaml
           from pathlib import Path
@@ -37,8 +37,8 @@ jobs:
           import hashlib, json, subprocess
           from pathlib import Path
           import yaml
-          root = Path('helm-common/nucleus')
-          for file, digest in json.loads(Path('helm-common/nucleus-source.json').read_text())['sha256'].items():
+          root = Path('helm-templates/nucleus')
+          for file, digest in json.loads(Path('helm-templates/nucleus-source.json').read_text())['sha256'].items():
               assert hashlib.sha256((root / file).read_bytes()).hexdigest() == digest, file
           for component, folder in [('frontend','idea-fe'), ('backend','idea-be')]:
               output = subprocess.check_output(['helm','template','idea-board-'+component,str(root),'--namespace','idea-board-test','--skip-tests','-f','helm-overides/'+folder+'/custom-values.yaml'], text=True)

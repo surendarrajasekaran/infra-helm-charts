@@ -5,9 +5,9 @@ Argo CD reads desired application manifests from this repository. [om-idea-board
 | Path | Purpose |
 | --- | --- |
 | `bootstrap/idea-board-project.yaml` | Scoped Argo AppProject |
-| `bootstrap/idea-board-applications.yaml` | Values enabling the two Argo Applications |
+| `helm-overides/argocd-app-controller/custom-values.yaml` | Values enabling the two Argo Applications |
 | `helm-templates/argocd-app-controller` | Generic chart rendering Application resources |
-| `helm-common/nucleus` | Canonical nucleus 1.1.0 chart and provenance |
+| `helm-templates/nucleus` | Canonical nucleus 1.1.0 chart and provenance |
 | `helm-overides/idea-fe/custom-values.yaml` | Frontend image, resources and configuration |
 | `helm-overides/idea-be/custom-values.yaml` | Backend image, resources and configuration |
 | `environments/<target>/manifests` | Namespace controls plus rendered evidence/recovery inputs |
@@ -21,7 +21,7 @@ Argo CD reads desired application manifests from this repository. [om-idea-board
 
 The chart and both component values files live here, using the exact folder layout above. The application pipeline updates each image tag/digest, resource profile and release identity in the current values, previews the exact Helm render, and commits the values plus checksummed recovery snapshots. The application repository has a pinned GitOps reference for CI checks and no duplicate chart.
 
-Argo CD renders `helm-common/nucleus` twice: once with the backend values and Helm release name `idea-board-backend`, then with frontend values and release name `idea-board-frontend`. They produce separate Deployments and Services. The generic application chart creates exactly two Applications, `idea-board-backend` and `idea-board-frontend`, through Helm bootstrap release `idea-board-test-apps` in `argocd`. Backend has an additional source including only `controls.yaml` for namespace security; rendered frontend/backend files remain validation/recovery inputs and are excluded. Controls precede backend resources through sync waves. The Applications reconcile independently; the shared HTTP monitor waits for both component versions. No parent Application or additional controller Pod is created.
+Argo CD renders `helm-templates/nucleus` twice: once with the backend values and Helm release name `idea-board-backend`, then with frontend values and release name `idea-board-frontend`. They produce separate Deployments and Services. The generic application chart creates exactly two Applications, `idea-board-backend` and `idea-board-frontend`, through Helm bootstrap release `idea-board-test-apps` in `argocd`. Backend has an additional source including only `controls.yaml` for namespace security; rendered frontend/backend files remain validation/recovery inputs and are excluded. Controls precede backend resources through sync waves. The Applications reconcile independently; the shared HTTP monitor waits for both component versions. No parent Application or additional controller Pod is created.
 
 Application definitions change through an explicit upgrade of the bootstrap Helm release (see the [generic chart guide](helm-templates/argocd-app-controller/README.md)). Images/resources change through the component values and reconcile automatically. Default Application deletion leaves workloads running; replica drift is always reconciled.
 
