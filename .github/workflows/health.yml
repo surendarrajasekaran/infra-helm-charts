@@ -55,9 +55,10 @@ jobs:
         env:
           TARGET: ${{ matrix.target }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'nvidia' }}
-          AI_MODEL: ${{ vars.AI_MODEL || 'nvidia/llama-3.3-nemotron-super-49b-v1.5' }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'gemini' }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'gemini-flash-latest' }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           git config user.name 'idea-board-health[bot]'
           git config user.email 'idea-board-health@users.noreply.github.com'
