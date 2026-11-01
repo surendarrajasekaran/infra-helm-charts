@@ -3,31 +3,31 @@
   "delivery": "helm",
   "environment": "test",
   "hashes": {
-    "backend.yaml": "6d4cee6f0189ba08e650f4b4b3e7e7554f102322bdc2a0f1363c0331dfcbd0cb",
+    "backend.yaml": "77046e69e5590658cc4b5834921ba3cd0bb1f4be1102483cbb228e6ffdc2a534",
     "controls.yaml": "187d483dadcfe8ba4e2d51b33d3a5c418f3e8b31100a75a3dd9e7f6cb6eccc71",
-    "frontend.yaml": "111557e41fc957ed85687a7e471335953f55d1e51c243b198714e040e0cf0f73"
+    "frontend.yaml": "b6f2451ffe47fc236ceb39adb3818d5ac52e6ef89b76907a9c91569b3c3482d1"
   },
   "helm_values_hashes": {
-    "backend-values.yaml": "706f0846bd3f3bd859e65863732608fc09a9ed8dd2cbc8bcea623d2cae90dba8",
-    "frontend-values.yaml": "40150056fb1fb658142e5959ad9f21eb3d5fdda6f4301139277a985105657491"
+    "backend-values.yaml": "2e1d10bb1798aa08fb08c4dbdb35511d591919253e4652736cc1ee2ddf2e968e",
+    "frontend-values.yaml": "15174e4935d103957af46d5edf3683b5ff4d0a162e830c7e1fd2545061ed6d00"
   },
-  "id": "e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1",
+  "id": "de259833b6d8405b2af58ce59d9aa9a846b2a9da-41305184222-1",
   "images": {
-    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:1c2e020731b9f9ba80f60780cbde73a4aeb440c6c462ed07962ef033f49fc010",
-    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:a229bf0ed35b61b85d50f1828e044dadc008ef158f0509c8b9d7d958c924b4f2"
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-de259833b6d8405b2af58ce59d9aa9a846b2a9da-41305184222-1@sha256:c233311fc8e950279d8b7b52fdcc98580dcd6a0eaae8049088caed0074ba05c4",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-de259833b6d8405b2af58ce59d9aa9a846b2a9da-41305184222-1@sha256:d8a841ca37ef65ee8ddc4a616cbb90a2e202ab220e63fa1fbda6b0d71d558ad3"
   },
   "name": "idea-board",
   "profile": {
     "environment": "test",
     "profile": {
       "cpu_request": "250m",
-      "memory_request": "128Mi",
-      "rationale": "Test environment requires only one replica and respects the maximum 250m CPU limit while keeping memory lean for cost efficiency.",
+      "memory_request": "256Mi",
+      "rationale": "Test environment constraint requires one replica and at most 250m CPU with 256Mi memory.",
       "replicas": 1
     },
     "source": "live-ai"
   },
   "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
-  "source_commit": "e748d48a6e00b65b22fde707b2389db2863b39e0",
+  "source_commit": "de259833b6d8405b2af58ce59d9aa9a846b2a9da",
   "target": "idea-board-aws-test"
 }
