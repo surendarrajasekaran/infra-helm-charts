@@ -3,18 +3,18 @@
   "delivery": "helm",
   "environment": "test",
   "hashes": {
-    "backend.yaml": "d25feb234f9f956e9f1d28c7f25cf5c5cb2be8b72719685d9bc59b23816066dc",
-    "controls.yaml": "994e7250b6b8f6701afefb54c39313433b88701e2d0e87ddc8a0a27ffb67542b",
-    "frontend.yaml": "71658af341ac082aba960e8dafd09423f5c373f6e31a7ff810735cff1dfd114a"
+    "backend.yaml": "5085dcaf3ba419617c7c6535b854309c28205fe7e50994f97f7e4ff910c2f587",
+    "controls.yaml": "187d483dadcfe8ba4e2d51b33d3a5c418f3e8b31100a75a3dd9e7f6cb6eccc71",
+    "frontend.yaml": "ef6b4ad8fedf45e67b631d4a00264e8a1144cb71de16ba58d14da76d34a44f49"
   },
   "helm_values_hashes": {
-    "backend-values.yaml": "bb34197830865b6d592df79bb9f3a897de0bd35b8e35b6e4498adf110d89d355",
-    "frontend-values.yaml": "367464d111513f1997f1bf06b32dfb51a2e6fbfdfcae2268d4ebfa687b3009c3"
+    "backend-values.yaml": "0017edbaad7754b10a1b49444d44c6b7c32216b8275bcc529163ee93fbb6c145",
+    "frontend-values.yaml": "a75d5d8129803c4a444ebaae4851d7d8130dc85bb4491924ddfba8119269102e"
   },
-  "id": "d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1",
+  "id": "89f5f4e393e8bfaab6744ca2c0b6559f4fafc2d6-41292570647-1",
   "images": {
-    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:583098582c5c2c286bcdfcb936f7cb42cd632dc3881ba512e7dfc14dfcf9682b",
-    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:6c5985c7387fe321e7862b3821a1d17464ea7867b91665c4f6e6c08678607b89"
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-89f5f4e393e8bfaab6744ca2c0b6559f4fafc2d6-41292570647-1@sha256:92da103285cd5b73ecbecc87ae3bd6321f50f13f55eb2c1849dd23bdb579618b",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-89f5f4e393e8bfaab6744ca2c0b6559f4fafc2d6-41292570647-1@sha256:36a1499fcfd629caa7eeafb5a4ea478c243be710aee37730b7620d58c29a8641"
   },
   "name": "idea-board",
   "profile": {
@@ -22,12 +22,12 @@
     "profile": {
       "cpu_request": "250m",
       "memory_request": "128Mi",
-      "rationale": "Test environment requires only one replica and at most 250m CPU, minimizing cost for a small team.",
+      "rationale": "Test environment requires only one replica and at most 250m CPU, optimized for cost.",
       "replicas": 1
     },
     "source": "live-ai"
   },
   "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
-  "source_commit": "d5a7717f2cbe9164dfb98d365435f602cbcd8a98",
+  "source_commit": "89f5f4e393e8bfaab6744ca2c0b6559f4fafc2d6",
   "target": "idea-board-aws-test"
 }
