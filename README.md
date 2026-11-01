@@ -1,6 +1,6 @@
 # Idea Board GitOps
 
-Argo CD owns deployment. Application CI builds and scans images, then updates the frontend/backend Helm values here.
+Platform provisioning, private access and the Argo Helm bootstrap live in [terraform-infrastructure](https://github.com/surendarrajasekaran/terraform-infrastructure). Argo CD owns application deployment. Application CI builds and scans images, then updates the frontend/backend Helm values here.
 
 ```text
 argocd-manifests/       Parent Application, scoped projects and network policies
@@ -28,4 +28,4 @@ The parent's project permits only Application resources in `argocd`. The workloa
 
 The workflow checks exact frontend/backend identity, readiness and new-release create/read, then prints the Gemini decision and evidence in Actions. Hard failures force Git recovery when a verified prior release exists. Recovery changes the same Helm values while preserving current security and Secret references; it never rolls back database data, schema or infrastructure. Unchanged healthy releases skip AI calls. It observes HTTP only.
 
-Gemini configuration remains `AI_ENVIRONMENT=GEMINI_API_KEY`, `AI_PROVIDER=gemini`, `AI_MODEL=gemini-3.5-flash-lite`, with the key stored in Actions secrets in the selected environment. Billing depends on the project's actual tier. See the [delivery guide](https://github.com/surendarrajasekaran/om-idea-board/blob/main/docs/gitops.md) for bootstrap, AI setup and demo steps, and [verification](https://github.com/surendarrajasekaran/om-idea-board/blob/main/docs/verification.md) for observed results. The anonymous AWS test board uses HTTP and synthetic data; the Argo UI stays private.
+Gemini configuration remains `AI_ENVIRONMENT=GEMINI_API_KEY`, `AI_PROVIDER=gemini`, `AI_MODEL=gemini-3.5-flash-lite`, with the key stored in Actions secrets in the selected environment. Billing depends on the project's actual tier. See the [delivery guide](https://github.com/surendarrajasekaran/om-idea-board#deploy-a-change) for bootstrap, AI setup and demo steps, and [verification](https://github.com/surendarrajasekaran/om-idea-board#current-deployment) for observed results. The anonymous AWS test board uses HTTP and synthetic data; the Argo UI stays private.
