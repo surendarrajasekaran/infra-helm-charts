@@ -1,7 +1,8 @@
 {
   "healthy_releases": [
+    "recovery-1793509010408156000",
     "bootstrap-77c8ee0-20261031"
   ],
   "last_failed_release": "rollback-drill-20261031",
-  "rollback_pending": true
+  "rollback_pending": false
 }
