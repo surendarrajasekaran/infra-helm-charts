@@ -56,7 +56,7 @@ jobs:
           TARGET: ${{ matrix.target }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_PROVIDER: ${{ vars.AI_PROVIDER || 'gemini' }}
-          AI_MODEL: ${{ vars.AI_MODEL || 'gemini-flash-latest' }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'gemini-3.5-flash-lite' }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
