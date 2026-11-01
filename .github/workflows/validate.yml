@@ -2,9 +2,9 @@ name: Validate Helm configuration
 on:
   push:
     branches: [main]
-    paths: [helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
   pull_request:
-    paths: [helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
 permissions:
   contents: read
 jobs:
@@ -37,6 +37,8 @@ jobs:
           import hashlib, json, subprocess
           from pathlib import Path
           import yaml
+          assert not Path('helm-common').exists(), 'Obsolete chart directory must stay removed'
+          assert not Path('bootstrap/idea-board-applications.yaml').exists(), 'Application values belong in helm-overides'
           root = Path('helm-templates/nucleus')
           for file, digest in json.loads(Path('helm-templates/nucleus-source.json').read_text())['sha256'].items():
               assert hashlib.sha256((root / file).read_bytes()).hexdigest() == digest, file
