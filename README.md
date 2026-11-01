@@ -1,6 +1,6 @@
 # Idea Board GitOps
 
-Platform provisioning, private access and the Argo Helm bootstrap live in [terraform-infrastructure](https://github.com/surendarrajasekaran/terraform-infrastructure). Argo CD owns application deployment. Application CI builds and scans images, then updates the frontend/backend Helm values here.
+Terraform provisioning and the Terraform-managed Argo controller live in [terraform-infrastructure](https://github.com/surendarrajasekaran/terraform-infrastructure). Argo CD owns application deployment. Application CI builds and scans images, then updates the frontend/backend Helm values here.
 
 ```text
 argocd-manifests/       Parent Application, scoped projects and network policies
@@ -16,7 +16,7 @@ releases/              Current release/status and immutable rollback snapshots
 - `idea-board-backend`: nucleus with backend values, plus namespace policies from `argocd-manifests/idea-board-aws-test/controls.yaml`.
 - `idea-board-frontend`: nucleus with frontend values.
 
-There are three Applications in Argo: one parent and two services. The controller is installed as Helm release `argocd`; there is no separate Helm installation for the app-controller chart or either service. Commit application-definition changes to Git and the parent reconciles them. The two services reconcile independently; the health workflow checks both release identities together.
+There are three Applications in Argo: one parent and two services. Terraform manages the controller as Helm release `argocd`; there is no separate Helm installation for the app-controller chart or either service. Commit application-definition changes to Git and the parent reconciles them. The two services reconcile independently; the health workflow checks both release identities together.
 
 The parent's project permits only Application resources in `argocd`. The workload project permits approved namespaced resources in `idea-board-test`, excluding Secrets and cluster resources. Namespace creation, credentials and database CA stay in authenticated private bootstrap. Application deletion has no cascading finalizer by default. Replicas are reconciled.
 
