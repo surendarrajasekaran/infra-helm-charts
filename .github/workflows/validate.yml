@@ -2,9 +2,9 @@ name: Validate Helm configuration
 on:
   push:
     branches: [main]
-    paths: [helm-common/**, helm-overides/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
   pull_request:
-    paths: [helm-common/**, helm-overides/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
 permissions:
   contents: read
 jobs:
@@ -18,6 +18,19 @@ jobs:
       - run: pip install -r automation/requirements.txt
       - run: helm lint helm-common/nucleus -f helm-overides/idea-fe/custom-values.yaml
       - run: helm lint helm-common/nucleus -f helm-overides/idea-be/custom-values.yaml
+      - run: helm lint helm-templates/argocd-app-controller -f bootstrap/idea-board-applications.yaml
+      - name: Validate the two Argo Applications
+        run: |
+          helm template idea-board-test-apps helm-templates/argocd-app-controller --namespace argocd -f bootstrap/idea-board-applications.yaml > /tmp/idea-board-applications.yaml
+          python - <<'PY'
+          import yaml
+          from pathlib import Path
+          docs = list(yaml.safe_load_all(Path('/tmp/idea-board-applications.yaml').read_text()))
+          assert {doc['metadata']['name'] for doc in docs} == {'idea-board-backend','idea-board-frontend'}
+          assert all(doc['kind']=='Application' and doc['spec']['project']=='idea-board-test' for doc in docs)
+          assert all(not doc.get('spec',{}).get('ignoreDifferences') for doc in docs)
+          print('Exactly two Applications, scoped project and reconciled replicas verified')
+          PY
       - name: Verify chart provenance and rendered workload security
         run: |
           python - <<'PY'

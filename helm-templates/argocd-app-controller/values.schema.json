@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "controllerNamespace": {"type": "string"},
+    "namePrefix": {"type": "string"},
+    "project": {"type": "string"},
+    "server": {"type": "string"},
+    "cascadeDeletion": {"type": "boolean"},
+    "global": {
+      "type": "object",
+      "properties": {
+        "repoURL": {"type": "string"},
+        "chartPath": {"type": "string"},
+        "targetRevision": {"type": "string"}
+      }
+    },
+    "syncPolicy": {"type": "object"},
+    "applications": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", "maxLength": 63},
+      "additionalProperties": {
+        "type": "object",
+        "required": ["enabled"],
+        "properties": {
+          "enabled": {"type": "boolean"},
+          "namespace": {"type": "string", "minLength": 1},
+          "project": {"type": "string"},
+          "sourceType": {"enum": ["helm", "directory", "kustomize"]},
+          "sourcePath": {"type": "string"},
+          "repoURL": {"type": "string"},
+          "targetRevision": {"type": "string"},
+          "helmValuesFiles": {"type": "array", "items": {"type": "string"}},
+          "helmValuesFile": {"type": "string"},
+          "helmParameters": {"type": "array", "items": {"type": "object"}},
+          "helmValues": {"type": "object"},
+          "directory": {"type": "object"},
+          "kustomize": {"type": "object"},
+          "additionalSources": {"type": "array", "items": {"type": "object", "required": ["path"]}},
+          "syncPolicy": {"type": "object"},
+          "ignoreDifferences": {"type": "array"},
+          "cascadeDeletion": {"type": "boolean"},
+          "syncWave": {"type": "integer"}
+        }
+      }
+    }
+  }
+}

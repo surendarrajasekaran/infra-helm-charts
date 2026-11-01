@@ -1,0 +1,26 @@
+clusterName: idea-board-test
+environment: test
+project: idea-board-test
+global:
+  repoURL: https://github.com/surendarrajasekaran/infra-helm-charts.git
+  chartPath: helm-common/nucleus
+  targetRevision: main
+applications:
+  idea-board-backend:
+    enabled: true
+    namespace: idea-board-test
+    releaseName: idea-board-backend
+    helmValuesFiles:
+      - ../../helm-overides/idea-be/custom-values.yaml
+    syncWave: 0
+    additionalSources:
+      - path: environments/idea-board-aws-test/manifests
+        directory:
+          include: controls.yaml
+  idea-board-frontend:
+    enabled: true
+    namespace: idea-board-test
+    releaseName: idea-board-frontend
+    helmValuesFiles:
+      - ../../helm-overides/idea-fe/custom-values.yaml
+    syncWave: 10

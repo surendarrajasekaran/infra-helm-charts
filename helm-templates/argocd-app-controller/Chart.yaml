@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argocd-app-controller
+description: Reusable values-driven Argo CD Application definitions
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

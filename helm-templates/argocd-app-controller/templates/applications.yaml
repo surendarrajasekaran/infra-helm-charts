@@ -1,0 +1,78 @@
+{{- range $name, $app := .Values.applications }}
+{{- if $app.enabled }}
+{{- $repo := required (printf "%s needs repoURL" $name) (default $.Values.global.repoURL $app.repoURL) }}
+{{- $revision := default $.Values.global.targetRevision $app.targetRevision }}
+{{- $path := required (printf "%s needs sourcePath" $name) (default $.Values.global.chartPath $app.sourcePath) }}
+{{- $source := dict "repoURL" $repo "targetRevision" $revision "path" $path }}
+{{- $type := default "helm" $app.sourceType }}
+{{- if eq $type "helm" }}
+{{- $helm := dict "releaseName" (default $name $app.releaseName) "skipTests" true }}
+{{- if hasKey $app "helmValuesFiles" }}
+{{- $_ := set $helm "valueFiles" $app.helmValuesFiles }}
+{{- else if $app.helmValuesFile }}
+{{- $_ := set $helm "valueFiles" (list $app.helmValuesFile) }}
+{{- end }}
+{{- if hasKey $app "helmParameters" }}
+{{- $_ := set $helm "parameters" $app.helmParameters }}
+{{- end }}
+{{- if hasKey $app "helmValues" }}
+{{- $_ := set $helm "valuesObject" $app.helmValues }}
+{{- end }}
+{{- $_ := set $source "helm" $helm }}
+{{- else if eq $type "directory" }}
+{{- if $app.directory }}{{- $_ := set $source "directory" $app.directory }}{{- end }}
+{{- else if eq $type "kustomize" }}
+{{- if $app.kustomize }}{{- $_ := set $source "kustomize" $app.kustomize }}{{- end }}
+{{- else }}
+{{- fail (printf "Unsupported sourceType for %s" $name) }}
+{{- end }}
+{{- $sources := list $source }}
+{{- $cascade := $.Values.cascadeDeletion }}
+{{- if hasKey $app "cascadeDeletion" }}{{- $cascade = $app.cascadeDeletion }}{{- end }}
+{{- range $extra := $app.additionalSources }}
+{{- $item := mergeOverwrite (dict "repoURL" $repo "targetRevision" $revision) (deepCopy $extra) }}
+{{- $_ := required (printf "%s additional source needs path" $name) $item.path }}
+{{- $sources = append $sources $item }}
+{{- end }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ printf "%s%s" $.Values.namePrefix $name | quote }}
+  namespace: {{ default $.Release.Namespace $.Values.controllerNamespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ $name | quote }}
+    app.kubernetes.io/instance: {{ $.Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service | quote }}
+    {{- with $.Values.clusterName }}
+    cluster: {{ . | quote }}
+    {{- end }}
+    {{- with $.Values.environment }}
+    environment: {{ . | quote }}
+    {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ default 0 $app.syncWave | quote }}
+  {{- if $cascade }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- end }}
+spec:
+  project: {{ required (printf "%s needs project" $name) (default $.Values.project $app.project) | quote }}
+  destination:
+    server: {{ default $.Values.server $app.destinationServer | quote }}
+    namespace: {{ required (printf "%s needs namespace" $name) $app.namespace | quote }}
+  {{- if gt (len $sources) 1 }}
+  sources:
+    {{- toYaml $sources | nindent 4 }}
+  {{- else }}
+  source:
+    {{- toYaml $source | nindent 4 }}
+  {{- end }}
+  syncPolicy:
+    {{- mergeOverwrite (deepCopy $.Values.syncPolicy) (default dict $app.syncPolicy) | toYaml | nindent 4 }}
+  {{- with $app.ignoreDifferences }}
+  ignoreDifferences:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
