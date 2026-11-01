@@ -39,7 +39,7 @@ jobs:
       matrix: ${{ fromJson(needs.discover.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment: ${{ matrix.environment }}
+    environment: ${{ vars.AI_ENVIRONMENT || matrix.environment }}
     concurrency:
       group: health-${{ matrix.target }}
       cancel-in-progress: false
