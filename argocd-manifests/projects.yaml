@@ -1,6 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
+  name: idea-board-controller
+  namespace: argocd
+spec:
+  description: 'Parent controller: manages only child Applications in argocd'
+  sourceRepos:
+  - https://github.com/surendarrajasekaran/infra-helm-charts.git
+  destinations:
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+  - group: argoproj.io
+    kind: Application
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
   name: idea-board-test
   namespace: argocd
 spec:

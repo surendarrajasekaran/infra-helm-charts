@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["environments/**/release.json"]
+    paths: ["releases/*/release.json"]
 permissions:
   contents: read
 jobs:
@@ -23,7 +23,7 @@ jobs:
           import json, os, re
           from pathlib import Path
           targets = []
-          for path in Path('environments').glob('*/release.json'):
+          for path in Path('releases').glob('*/release.json'):
               data = json.loads(path.read_text())
               if data.get('public_url') and re.fullmatch(r'[a-z0-9][a-z0-9-]{2,60}', path.parent.name):
                   targets.append({'target': path.parent.name, 'environment': data['cloud'] + '-' + data['environment']})
@@ -48,11 +48,18 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { ref: main, persist-credentials: false }
+      - name: Load reviewed health tools from the application repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: surendarrajasekaran/om-idea-board
+          ref: e5da06878a79a8b0030af3e9fc8c8d8268d6bef5
+          path: artifacts/health-tools
+          persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with: { python-version: "3.12" }
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with: { version: v3.19.0 }
-      - run: pip install -r automation/requirements.txt
+      - run: pip install -r artifacts/health-tools/scripts/requirements.txt
       - name: Observe the exact frontend/backend release, assess health, recover Git if needed
         env:
           TARGET: ${{ matrix.target }}
@@ -64,7 +71,7 @@ jobs:
         run: |
           git config user.name 'idea-board-health[bot]'
           git config user.email 'idea-board-health@users.noreply.github.com'
-          python automation/gitops_monitor.py --show-report --target "$TARGET" --output "artifacts/$TARGET/health.json"
+          python artifacts/health-tools/scripts/gitops_monitor.py --root "$GITHUB_WORKSPACE" --show-report --target "$TARGET" --output "artifacts/$TARGET/health.json"
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

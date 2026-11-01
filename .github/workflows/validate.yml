@@ -2,9 +2,9 @@ name: Validate Helm configuration
 on:
   push:
     branches: [main]
-    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, argocd-manifests/**, bootstrap/**, .github/workflows/validate.yml]
   pull_request:
-    paths: [helm-common/**, helm-overides/**, helm-templates/**, bootstrap/**, .github/workflows/validate.yml]
+    paths: [helm-common/**, helm-overides/**, helm-templates/**, argocd-manifests/**, bootstrap/**, .github/workflows/validate.yml]
 permissions:
   contents: read
 jobs:
@@ -15,7 +15,7 @@ jobs:
         with: { persist-credentials: false }
       - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with: { version: v3.19.0 }
-      - run: pip install -r automation/requirements.txt
+      - run: pip install PyYAML==6.0.3
       - run: helm lint helm-templates/nucleus -f helm-overides/idea-fe/custom-values.yaml
       - run: helm lint helm-templates/nucleus -f helm-overides/idea-be/custom-values.yaml
       - run: helm lint helm-templates/argocd-app-controller -f helm-overides/argocd-app-controller/custom-values.yaml

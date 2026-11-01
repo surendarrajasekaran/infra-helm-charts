@@ -13,7 +13,7 @@ applications:
     helmValuesFiles:
       - ../../helm-overides/idea-be/custom-values.yaml
     additionalSources:
-      - path: environments/idea-board-aws-test/manifests
+      - path: argocd-manifests/idea-board-aws-test
         directory:
           include: controls.yaml
   idea-board-frontend:
