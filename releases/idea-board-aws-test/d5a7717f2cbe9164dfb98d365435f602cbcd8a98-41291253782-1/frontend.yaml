@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: idea-board-frontend
+  labels:
+    helm.sh/chart: nucleus-1.1.0
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-frontend
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/chart: nucleus
+    argocd.argoproj.io/sync-wave: '10'
+    idea-board/public-host: ''
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idea-board-frontend
+  labels:
+    helm.sh/chart: nucleus-1.1.0
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-frontend
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/chart: nucleus
+    argocd.argoproj.io/sync-wave: '10'
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nucleus
+      app.kubernetes.io/instance: idea-board-frontend
+  template:
+    metadata:
+      annotations:
+        idea-board/gitops-release: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:6c5985c7387fe321e7862b3821a1d17464ea7867b91665c4f6e6c08678607b89
+      labels:
+        app.kubernetes.io/name: nucleus
+        app.kubernetes.io/instance: idea-board-frontend
+    spec:
+      serviceAccountName: default
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: idea-board-frontend
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+      terminationGracePeriodSeconds: 30
+      automountServiceAccountToken: false
+      volumes:
+      - emptyDir:
+          sizeLimit: 8Mi
+        name: nginx-config
+      - emptyDir:
+          sizeLimit: 64Mi
+        name: nginx-cache
+      - emptyDir:
+          sizeLimit: 16Mi
+        name: nginx-tmp
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: frontend
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 101
+          runAsNonRoot: true
+          runAsUser: 101
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:6c5985c7387fe321e7862b3821a1d17464ea7867b91665c4f6e6c08678607b89
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+        env:
+        - name: BACKEND_HOST
+          value: idea-board-backend
+        - name: NGINX_ENVSUBST_FILTER
+          value: BACKEND_HOST|TLS_LISTEN|RELEASE_ID
+        - name: RELEASE_ID
+          value: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
+        - name: TLS_LISTEN
+          value: ''
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: http
+          periodSeconds: 5
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /health/live
+            port: http
+          periodSeconds: 5
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          name: nginx-config
+        - mountPath: /var/cache/nginx
+          name: nginx-cache
+        - mountPath: /tmp
+          name: nginx-tmp

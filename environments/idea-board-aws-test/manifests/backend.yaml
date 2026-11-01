@@ -50,8 +50,8 @@ spec:
     metadata:
       annotations:
         idea-board/database-version: ''
-        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:85cdc6dc971c64dc14cc57d65c35686510b60806446acf295eff9aea9c897307
-        idea-board/gitops-release: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1
+        idea-board/gitops-release: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:583098582c5c2c286bcdfcb936f7cb42cd632dc3881ba512e7dfc14dfcf9682b
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-backend
@@ -83,7 +83,7 @@ spec:
         envFrom:
         - secretRef:
             name: idea-board-migration
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:85cdc6dc971c64dc14cc57d65c35686510b60806446acf295eff9aea9c897307
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:583098582c5c2c286bcdfcb936f7cb42cd632dc3881ba512e7dfc14dfcf9682b
         imagePullPolicy: IfNotPresent
         name: migrate
         resources:
@@ -117,7 +117,7 @@ spec:
           runAsGroup: 10001
           runAsNonRoot: true
           runAsUser: 10001
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:85cdc6dc971c64dc14cc57d65c35686510b60806446acf295eff9aea9c897307
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:583098582c5c2c286bcdfcb936f7cb42cd632dc3881ba512e7dfc14dfcf9682b
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
@@ -130,6 +130,9 @@ spec:
           requests:
             cpu: 250m
             memory: 128Mi
+        env:
+        - name: RELEASE_ID
+          value: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
         envFrom:
         - secretRef:
             name: idea-board-database
@@ -155,6 +158,3 @@ spec:
         - mountPath: /etc/postgresql/ca
           name: database-ca
           readOnly: true
-        env:
-        - name: RELEASE_ID
-          value: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1

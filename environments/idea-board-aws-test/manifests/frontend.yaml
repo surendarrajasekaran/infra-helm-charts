@@ -10,9 +10,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
   annotations:
     app.kubernetes.io/chart: nucleus
+    argocd.argoproj.io/sync-wave: '10'
     idea-board/public-host: ''
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    argocd.argoproj.io/sync-wave: '10'
 spec:
   type: LoadBalancer
   ports:
@@ -51,8 +51,8 @@ spec:
   template:
     metadata:
       annotations:
-        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:ea45aa1838b948cd9383d6e27dbf7aa584d0d7f3bb7d9a55d111fc6acd985b6d
-        idea-board/gitops-release: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1
+        idea-board/gitops-release: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:6c5985c7387fe321e7862b3821a1d17464ea7867b91665c4f6e6c08678607b89
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-frontend
@@ -92,7 +92,7 @@ spec:
           runAsGroup: 101
           runAsNonRoot: true
           runAsUser: 101
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:ea45aa1838b948cd9383d6e27dbf7aa584d0d7f3bb7d9a55d111fc6acd985b6d
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1@sha256:6c5985c7387fe321e7862b3821a1d17464ea7867b91665c4f6e6c08678607b89
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -110,10 +110,10 @@ spec:
           value: idea-board-backend
         - name: NGINX_ENVSUBST_FILTER
           value: BACKEND_HOST|TLS_LISTEN|RELEASE_ID
+        - name: RELEASE_ID
+          value: d5a7717f2cbe9164dfb98d365435f602cbcd8a98-41291253782-1
         - name: TLS_LISTEN
           value: ''
-        - name: RELEASE_ID
-          value: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1
         livenessProbe:
           httpGet:
             path: /health/live
