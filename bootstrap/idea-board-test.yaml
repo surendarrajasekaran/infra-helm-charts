@@ -6,19 +6,26 @@ metadata:
 spec:
   description: Isolated test application; no cluster resources or Secrets from Git
   sourceRepos:
-    - https://github.com/surendarrajasekaran/infra-helm-charts.git
+  - https://github.com/surendarrajasekaran/infra-helm-charts.git
   destinations:
-    - namespace: idea-board-test
-      server: https://kubernetes.default.svc
+  - namespace: idea-board-test
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist: []
   namespaceResourceWhitelist:
-    - { group: apps, kind: Deployment }
-    - { group: "", kind: Service }
-    - { group: "", kind: ServiceAccount }
-    - { group: "", kind: ConfigMap }
-    - { group: "", kind: ResourceQuota }
-    - { group: networking.k8s.io, kind: NetworkPolicy }
-    - { group: policy, kind: PodDisruptionBudget }
+  - group: apps
+    kind: Deployment
+  - group: ''
+    kind: Service
+  - group: ''
+    kind: ServiceAccount
+  - group: ''
+    kind: ConfigMap
+  - group: ''
+    kind: ResourceQuota
+  - group: networking.k8s.io
+    kind: NetworkPolicy
+  - group: policy
+    kind: PodDisruptionBudget
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -27,21 +34,45 @@ metadata:
   namespace: argocd
 spec:
   project: idea-board-test
-  source:
-    repoURL: https://github.com/surendarrajasekaran/infra-helm-charts.git
-    targetRevision: main
-    path: environments/idea-board-aws-test/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: idea-board-test
   syncPolicy:
-    automated: { prune: true, selfHeal: true, allowEmpty: false }
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
     retry:
       limit: 5
       refresh: true
-      backoff: { duration: 10s, factor: 2, maxDuration: 3m }
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
     syncOptions:
-      - PruneLast=true
-      - ApplyOutOfSyncOnly=true
-      - FailOnSharedResource=true
-      - ServerSideApply=true
+    - PruneLast=true
+    - ApplyOutOfSyncOnly=true
+    - FailOnSharedResource=true
+    - ServerSideApply=true
+  sources:
+  - repoURL: https://github.com/surendarrajasekaran/infra-helm-charts.git
+    targetRevision: main
+    path: helm-common/nucleus
+    helm:
+      releaseName: idea-board-backend
+      valueFiles:
+      - ../../helm-overides/idea-be/custom-values.yaml
+      skipTests: true
+  - repoURL: https://github.com/surendarrajasekaran/infra-helm-charts.git
+    targetRevision: main
+    path: helm-common/nucleus
+    helm:
+      releaseName: idea-board-frontend
+      valueFiles:
+      - ../../helm-overides/idea-fe/custom-values.yaml
+      skipTests: true
+  - repoURL: https://github.com/surendarrajasekaran/infra-helm-charts.git
+    targetRevision: main
+    path: environments/idea-board-aws-test/manifests
+    directory:
+      include: controls.yaml

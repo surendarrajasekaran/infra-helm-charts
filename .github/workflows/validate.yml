@@ -1,0 +1,45 @@
+name: Validate Helm configuration
+on:
+  push:
+    branches: [main]
+    paths: [helm-common/**, helm-overides/**, bootstrap/**, .github/workflows/validate.yml]
+  pull_request:
+    paths: [helm-common/**, helm-overides/**, bootstrap/**, .github/workflows/validate.yml]
+permissions:
+  contents: read
+jobs:
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
+        with: { version: v3.19.0 }
+      - run: pip install -r automation/requirements.txt
+      - run: helm lint helm-common/nucleus -f helm-overides/idea-fe/custom-values.yaml
+      - run: helm lint helm-common/nucleus -f helm-overides/idea-be/custom-values.yaml
+      - name: Verify chart provenance and rendered workload security
+        run: |
+          python - <<'PY'
+          import hashlib, json, subprocess
+          from pathlib import Path
+          import yaml
+          root = Path('helm-common/nucleus')
+          for file, digest in json.loads(Path('helm-common/nucleus-source.json').read_text())['sha256'].items():
+              assert hashlib.sha256((root / file).read_bytes()).hexdigest() == digest, file
+          for component, folder in [('frontend','idea-fe'), ('backend','idea-be')]:
+              output = subprocess.check_output(['helm','template','idea-board-'+component,str(root),'--namespace','idea-board-test','--skip-tests','-f','helm-overides/'+folder+'/custom-values.yaml'], text=True)
+              docs = [doc for doc in yaml.safe_load_all(output) if doc]
+              assert not any(doc['kind']=='Secret' for doc in docs)
+              deployment = next(doc for doc in docs if doc['kind']=='Deployment')
+              pod = deployment['spec']['template']['spec']
+              assert pod['automountServiceAccountToken'] is False
+              for container in pod['containers'] + pod.get('initContainers', []):
+                  security = container['securityContext']
+                  assert security['runAsNonRoot'] is True
+                  assert security['readOnlyRootFilesystem'] is True
+                  assert security['allowPrivilegeEscalation'] is False
+                  assert 'ALL' in security['capabilities']['drop']
+                  assert '@sha256:' in container['image']
+          print('Chart provenance and both hardened Deployments verified')
+          PY
