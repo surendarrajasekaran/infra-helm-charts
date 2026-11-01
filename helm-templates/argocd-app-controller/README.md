@@ -13,4 +13,4 @@ helm template idea-board-test-apps helm-templates/argocd-app-controller \
   --namespace argocd -f helm-overides/argocd-app-controller/custom-values.yaml
 ```
 
-This command only previews the Application definitions. Bootstrap the scoped projects and parent through the private API using `argocd-manifests`. Later definition/value changes are committed to Git and reconciled by Argo. The parent and children have no cascading-deletion finalizers by default; explicit deletion/retirement requires operator care.
+This command only previews the Application definitions. Follow the [repository setup guide](../../README.md#first-time-setup) to prepare credentials and bootstrap the scoped projects and parent through an authorized Kubernetes API connection. Later definition/value changes are committed to Git and reconciled by Argo. The parent and children have no cascading-deletion finalizers by default; explicit deletion/retirement requires operator care.
