@@ -51,8 +51,8 @@ spec:
   template:
     metadata:
       annotations:
-        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1@sha256:ba8a5b84b268280076cca653d3c233d4427c74f1a2a134a78bd5a6a5b7b825c8
-        idea-board/gitops-release: 4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:ea45aa1838b948cd9383d6e27dbf7aa584d0d7f3bb7d9a55d111fc6acd985b6d
+        idea-board/gitops-release: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-frontend
@@ -92,7 +92,7 @@ spec:
           runAsGroup: 101
           runAsNonRoot: true
           runAsUser: 101
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1@sha256:ba8a5b84b268280076cca653d3c233d4427c74f1a2a134a78bd5a6a5b7b825c8
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:ea45aa1838b948cd9383d6e27dbf7aa584d0d7f3bb7d9a55d111fc6acd985b6d
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -113,7 +113,7 @@ spec:
         - name: TLS_LISTEN
           value: ''
         - name: RELEASE_ID
-          value: 4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1
+          value: ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1
         livenessProbe:
           httpGet:
             path: /health/live

@@ -2,14 +2,14 @@
   "cloud": "aws",
   "environment": "test",
   "hashes": {
-    "backend.yaml": "5b5d261a966ccc9db65902c2c30586171788b153f908819529cb5ac234a4e94e",
+    "backend.yaml": "dfaad49d7f32c19ce7867bdc2babcbb6df505460cd52cd248c82852818739a3f",
     "controls.yaml": "994e7250b6b8f6701afefb54c39313433b88701e2d0e87ddc8a0a27ffb67542b",
-    "frontend.yaml": "1f400baf1d72f43c2ccbc9af5171f4230358f954e1dbfc7020754e6b67a075ae"
+    "frontend.yaml": "cb24953332a46b7ed2776a4d30e3b8d409ab2ef02aa0feec5db8d20399fffd5e"
   },
-  "id": "4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1",
+  "id": "ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1",
   "images": {
-    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1@sha256:9d4e8a5c1246ffe7e8786e9c660c50957be2dc69c099a5b9424d145e1d843c5e",
-    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-4a7ede45f00627b1d8366e066580691cccf19c15-41283855117-1@sha256:ba8a5b84b268280076cca653d3c233d4427c74f1a2a134a78bd5a6a5b7b825c8"
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:85cdc6dc971c64dc14cc57d65c35686510b60806446acf295eff9aea9c897307",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ebeab35e71421f043c97ef6351bc3a4dce988775-41289837124-1@sha256:ea45aa1838b948cd9383d6e27dbf7aa584d0d7f3bb7d9a55d111fc6acd985b6d"
   },
   "name": "idea-board",
   "profile": {
@@ -17,12 +17,12 @@
     "profile": {
       "cpu_request": "250m",
       "memory_request": "128Mi",
-      "rationale": "Test environment constrained to one replica and at most 250m CPU for cost-sensitivity.",
+      "rationale": "Test environment constraint requires at most one replica and 250m CPU, minimizing cost.",
       "replicas": 1
     },
     "source": "live-ai"
   },
   "public_url": "http://af0d4388f01a74cebb0d087102ac80e7-5adda6a4d01432b5.elb.us-west-2.amazonaws.com",
-  "source_commit": "4a7ede45f00627b1d8366e066580691cccf19c15",
+  "source_commit": "ebeab35e71421f043c97ef6351bc3a4dce988775",
   "target": "idea-board-aws-test"
 }
