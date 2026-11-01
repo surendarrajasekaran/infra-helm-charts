@@ -50,8 +50,8 @@ spec:
     metadata:
       annotations:
         idea-board/database-version: ''
-        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
-        idea-board/gitops-release: recovery-1793509010408156000
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2@sha256:af21eb50ca9a2e94b4befde5b3b2a97077df258691a5f8723320a66761517beb
+        idea-board/gitops-release: f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2
       labels:
         app.kubernetes.io/name: nucleus
         app.kubernetes.io/instance: idea-board-backend
@@ -83,7 +83,7 @@ spec:
         envFrom:
         - secretRef:
             name: idea-board-migration
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2@sha256:af21eb50ca9a2e94b4befde5b3b2a97077df258691a5f8723320a66761517beb
         imagePullPolicy: IfNotPresent
         name: migrate
         resources:
@@ -117,7 +117,7 @@ spec:
           runAsGroup: 10001
           runAsNonRoot: true
           runAsUser: 10001
-        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-77c8ee068cf0183a4c5c16125595db41389703bb-local-1793436379700681000@sha256:4235bd37f015a5b5451421e8a40b1feb5ee85bdf07a65890d260f9a2b5cc7bd1
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2@sha256:af21eb50ca9a2e94b4befde5b3b2a97077df258691a5f8723320a66761517beb
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
@@ -157,4 +157,4 @@ spec:
           readOnly: true
         env:
         - name: RELEASE_ID
-          value: recovery-1793509010408156000
+          value: f2f202a189c020d222b335c25db52eb2c82f5008-41275785592-2
