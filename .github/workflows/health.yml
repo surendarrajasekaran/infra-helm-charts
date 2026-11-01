@@ -62,7 +62,7 @@ jobs:
         run: |
           git config user.name 'idea-board-health[bot]'
           git config user.email 'idea-board-health@users.noreply.github.com'
-          python automation/gitops_monitor.py --target "$TARGET" --output "artifacts/$TARGET/health.json"
+          python automation/gitops_monitor.py --show-report --target "$TARGET" --output "artifacts/$TARGET/health.json"
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
