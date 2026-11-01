@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: idea-board-backend
+  labels:
+    helm.sh/chart: nucleus-1.1.0
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-backend
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/chart: nucleus
+    argocd.argoproj.io/sync-wave: '0'
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idea-board-backend
+  labels:
+    helm.sh/chart: nucleus-1.1.0
+    app.kubernetes.io/name: nucleus
+    app.kubernetes.io/instance: idea-board-backend
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/chart: nucleus
+    argocd.argoproj.io/sync-wave: '0'
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nucleus
+      app.kubernetes.io/instance: idea-board-backend
+  template:
+    metadata:
+      annotations:
+        idea-board/database-version: ''
+        idea-board/gitops-release: e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1
+        idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:1c2e020731b9f9ba80f60780cbde73a4aeb440c6c462ed07962ef033f49fc010
+      labels:
+        app.kubernetes.io/name: nucleus
+        app.kubernetes.io/instance: idea-board-backend
+    spec:
+      serviceAccountName: default
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: idea-board-backend
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+      terminationGracePeriodSeconds: 30
+      automountServiceAccountToken: false
+      volumes:
+      - name: database-ca
+        secret:
+          defaultMode: 292
+          secretName: idea-board-database-ca
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - python
+        - -m
+        - app.migrate
+        envFrom:
+        - secretRef:
+            name: idea-board-migration
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:1c2e020731b9f9ba80f60780cbde73a4aeb440c6c462ed07962ef033f49fc010
+        imagePullPolicy: IfNotPresent
+        name: migrate
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 10001
+          runAsNonRoot: true
+          runAsUser: 10001
+        volumeMounts:
+        - mountPath: /etc/postgresql/ca
+          name: database-ca
+          readOnly: true
+      containers:
+      - name: backend
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 10001
+          runAsNonRoot: true
+          runAsUser: 10001
+        image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:1c2e020731b9f9ba80f60780cbde73a4aeb440c6c462ed07962ef033f49fc010
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+        env:
+        - name: RELEASE_ID
+          value: e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1
+        envFrom:
+        - secretRef:
+            name: idea-board-database
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: http
+          periodSeconds: 5
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /health/live
+            port: http
+          periodSeconds: 5
+        volumeMounts:
+        - mountPath: /etc/postgresql/ca
+          name: database-ca
+          readOnly: true

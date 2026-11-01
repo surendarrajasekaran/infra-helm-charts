@@ -2,7 +2,7 @@ fullnameOverride: idea-board-frontend
 containerName: frontend
 image:
   repository: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend
-  tag: git-34e51359443122bd50a87f73d3842fd11f63ff42-41297366032-1@sha256:aeda127097154e2001663e314e530e05bbfaf01924a463afb184f97ecf4eabc6
+  tag: git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:a229bf0ed35b61b85d50f1828e044dadc008ef158f0509c8b9d7d958c924b4f2
   pullPolicy: IfNotPresent
 workload:
   enabled: true
@@ -34,7 +34,7 @@ env:
   BACKEND_HOST: idea-board-backend
   NGINX_ENVSUBST_FILTER: BACKEND_HOST|TLS_LISTEN|RELEASE_ID
   TLS_LISTEN: ''
-  RELEASE_ID: 34e51359443122bd50a87f73d3842fd11f63ff42-41297366032-1
+  RELEASE_ID: e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1
 automountServiceAccountToken: false
 securityContext:
   runAsNonRoot: true
@@ -95,8 +95,8 @@ volumeMounts:
 - name: nginx-tmp
   mountPath: /tmp
 podAnnotations:
-  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-34e51359443122bd50a87f73d3842fd11f63ff42-41297366032-1@sha256:aeda127097154e2001663e314e530e05bbfaf01924a463afb184f97ecf4eabc6
-  idea-board/gitops-release: 34e51359443122bd50a87f73d3842fd11f63ff42-41297366032-1
+  idea-board/release-image: 812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1@sha256:a229bf0ed35b61b85d50f1828e044dadc008ef158f0509c8b9d7d958c924b4f2
+  idea-board/gitops-release: e748d48a6e00b65b22fde707b2389db2863b39e0-41300910643-1
 topologySpreadConstraints:
 - maxSkew: 1
   topologyKey: kubernetes.io/hostname
