@@ -3,46 +3,46 @@
   "delivery": "helm",
   "environment": "test",
   "hashes": {
-    "backend.yaml": "f8e1efe1c717c50f77ce9347ab680bc925c64955b012213c27023f1847655aa1",
+    "backend.yaml": "65c152068eae8ee086d1b6b820c7a814207eb9b435af4096114524528105fc2b",
     "controls.yaml": "187d483dadcfe8ba4e2d51b33d3a5c418f3e8b31100a75a3dd9e7f6cb6eccc71",
-    "frontend.yaml": "79dfe2382a8190769af633fd4d73c2b5130bd1cc47c050e50a548d24c8da5a33"
+    "frontend.yaml": "6437e0f9f99ff06e876d084599f7b2363c8fe981552cd808f9bc57feca987400"
   },
   "helm_values_hashes": {
-    "backend-values.yaml": "d7eba069cddb387c3d4ab7c2d503a347fdc1702d73ef252799b837169c6910a1",
-    "frontend-values.yaml": "ef9decced7a806a3b6586d09c0360f76949c5185a6e187707982699a21369ea0"
+    "backend-values.yaml": "e6ea6d071b4dcf12949d00464fcff0c40da0ea33b7c27c99b1bb92c7ebb2cda6",
+    "frontend-values.yaml": "52105919f8f07bc61442c5aab9cd258e2788ef71dd2484ef41667cf350bf088e"
   },
-  "id": "ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1",
+  "id": "ec9eff1ebeb328e60e84a855810bcb366731034b-41311171474-1",
   "images": {
-    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1@sha256:74752d1ae9f811ebe66bf8154a4692cd2cb92569720924b9d06e798ee0c78f3a",
-    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ec9eff1ebeb328e60e84a855810bcb366731034b-41308069436-1@sha256:a886d45c484947cbbd43a67bdf3d105843b4e5bb0959af3af49a08fd70325ec0"
+    "backend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/backend:git-ec9eff1ebeb328e60e84a855810bcb366731034b-41311171474-1@sha256:dd7d60c746b7fedf8aaa66ad13e47688f45e7a0777bcf38a8fe26875a2790029",
+    "frontend": "812752207041.dkr.ecr.us-west-2.amazonaws.com/idea-board-test/frontend:git-ec9eff1ebeb328e60e84a855810bcb366731034b-41311171474-1@sha256:89ddf43451b5700e6799440285715162ecc6403cba37e2fa51401a32a671c973"
   },
   "name": "idea-board",
   "profile": {
     "ai_request": {
-      "input_tokens": 432,
-      "output_tokens": 785,
+      "input_tokens": 456,
+      "output_tokens": 1017,
       "reported_model": "gemini-3.5-flash-lite",
-      "request_duration_ms": 3562,
-      "response_id": "EjXnaqvUINrA39IP_dOQuQY",
-      "total_tokens": 1217
+      "request_duration_ms": 4317,
+      "response_id": "-z3natPbMue7xdIP4uW0wQs",
+      "total_tokens": 1473
     },
     "environment": "test",
     "explanation": {
-      "alternatives_and_tradeoffs": "Evaluating the allowed alternatives, selecting a 100m CPU request would lower scheduler reservation pressure but might increase latency under multi-tenant node contention. Selecting a 128Mi memory request would allow higher bin-packing density on test nodes but could increase the risk of delayed scheduling if node memory is fragmented, whereas 512Mi would over-reserve memory unnecessarily for a test environment with no utilization evidence.",
-      "assumptions": "It is assumed that the workload functions adequately within a single replica test profile and that the lack of historical usage data necessitates a moderate, safe starting allocation rather than a heavily tuned profile. These assumptions are independent of the supplied evidence, which contains no runtime metrics.",
-      "cost_impact": "Adjusting resource requests alters scheduler reservation levels on the node. However, changing requests does not automatically change the bill of the existing fixed-size worker, as no elastic node provisioning or dynamic billing adjustments are coupled to these values in the provided environment context.",
-      "cpu_rationale": "A CPU request of 250m was chosen from the allowed alternatives of 100m and 250m to grant the application a higher relative share of CPU under contention, while staying strictly within the test constraint maximum of 250m. CPU requests affect scheduling and relative shares under contention, but they do not govern the throttling ceiling, which remains bound by the fixed 1 CPU limit.",
-      "goal_interpretation": "The developer requests a cost-sensitive resource profile for a test environment shared by a small team, operating under strict testing constraints of at most one replica and a maximum 250m requested CPU per component. The developer also requested an implicit general reduction in resource consumption to align with cost sensitivity, which is addressed within the bounds of the allowed enumeration.",
-      "memory_rationale": "A memory request of 256Mi was chosen as a balanced midpoint among the allowed 128Mi, 256Mi, and 512Mi options. Memory requests influence node placement and scheduler eviction priorities rather than providing a hard usage ceiling. The fixed 512Mi limit governs the container OOM kill risk, which remains unchanged.",
-      "replica_rationale": "A replica count of 1 was chosen because the deployment context is explicitly constrained to test environments where single-instance availability is acceptable. This minimizes resource overhead for the small team but trades away high availability and rolling update capacity during deployments.",
-      "request_compatibility": "There are no unsupported developer requests for this target component profile; all chosen parameters strictly adhere to the provided test constraints and allowed enumeration boundaries.",
-      "risks_and_limitations": "Since no live usage measurements or telemetry data were supplied, actual runtime requirements remain unknown. Raising requests does not prevent OOM kills or CPU throttling, nor does it guarantee stability or free node capacity. Unmeasured outcomes are possibilities requiring validation during active usage.",
-      "verification_plan": "Post-deployment verification should be performed by monitoring application startup logs, checking pod health and readiness probes via the orchestration dashboard, observing basic endpoint responsiveness, and reviewing container telemetry over a representative testing period to determine if actual usage aligns with the 250m CPU and 256Mi memory requests."
+      "alternatives_and_tradeoffs": "The plausible alternative profile within the allowed constraints would combine 1 replica with 250m CPU and a higher memory request such as 256Mi or 512Mi. While increasing the CPU request to 250m might slightly improve scheduling priority, it unnecessarily consumes more reserved CPU shares on a shared node for an occasional test environment. The selected balance of 1 replica, 100m CPU, and 128Mi memory achieves the lowest possible reservation impact while remaining within the bounds defined for test components.",
+      "assumptions": "It is assumed that the application containers can initialize and handle occasional light traffic within the 100m CPU and 128Mi memory request bounds, and that any peak demand spikes can transiently burst up to the fixed limits. These assumptions are distinct from the supplied evidence, which contains no measured CPU, memory, or traffic data, and no capacity or performance guarantees.",
+      "cost_impact": "Adjusting the resource requests modifies the cluster scheduler reservations for the workload, but as noted, changing requests does not automatically change the bill of the existing fixed-size worker node. The lower reservation profile simply reduces the allocated share of the node, potentially allowing other scheduled workloads to coexist without implying direct node-bill savings.",
+      "cpu_rationale": "The 100m CPU request was chosen over the alternative 250m option to leave a larger scheduling margin and lower the reservation footprint on the node. CPU requests affect scheduling placement and establish relative shares under contention, but they do not act as the throttling ceiling, which remains governed by the fixed 1 CPU limit. Selecting 100m leaves potential for higher burst capacity up to the limit if the node has spare cycles, though raising the request to 100m does not by itself prevent CPU throttling or guarantee stability.",
+      "goal_interpretation": "The developer is requesting a small test environment tailored for occasional users, utilizing a single replica per service and preferring a light resource footprint of 100m CPU and 128Mi memory. The constraints enforce a single shared profile for the frontend and backend application containers, limiting CPU requests to a maximum of 250m and replicas strictly to 1. The developer's request aligns well with the environment constraints, with no unsupported developer requests identified.",
+      "memory_rationale": "The 128Mi memory request was selected over 256Mi and 512Mi to minimize the memory reservation footprint for this occasional test workload. Memory requests influence scheduling placement and eviction priorities, but they do not form a hard usage ceiling; the fixed 512Mi limit continues to govern container OOM risk. Choosing a smaller request allows the scheduler more flexibility in placing the pod, while keeping the higher limit in place as a safeguard if actual use exceeds the initial request.",
+      "replica_rationale": "A replica count of 1 is chosen because this is a test environment dedicated to occasional users where high availability is not a requirement. Using a single replica minimizes resource consumption on the cluster. The trade-off is that if the single pod crashes or undergoes maintenance, the service will experience downtime until it is restarted by the orchestrator. This trade-off is fully acceptable for a non-critical test deployment.",
+      "request_compatibility": "None. All elements of the developer request are fully compatible with the stated test environment constraints and allowed resource parameters.",
+      "risks_and_limitations": "Since no measured usage evidence or traffic data was supplied, there is a risk that the chosen memory request is too low for normal operation, potentially leading to increased eviction priority if node memory becomes constrained. Furthermore, setting a 100m request does not guarantee that the application will not experience CPU throttling under load, and no claims can be made regarding free node capacity or absolute stability.",
+      "verification_plan": "Post-deployment verification should be conducted by observing the pod status to ensure it transitions successfully to the Running state without CrashLoopBackOff or OOMKilled events. The container logs should be checked for startup errors, and basic HTTP liveness probes should be monitored. Because no live usage measurements are supplied, ongoing observation of resource metrics is required to validate whether actual usage aligns with the chosen requests."
     },
     "profile": {
-      "cpu_request": "250m",
-      "memory_request": "256Mi",
-      "rationale": "Configured for a test environment adhering to the constraint of one replica and a maximum of 250m CPU requested, balancing scheduler placement with reasonable relative shares.",
+      "cpu_request": "100m",
+      "memory_request": "128Mi",
+      "rationale": "The test environment target matches the absolute minimum bounds of 1 replica and 100m CPU with 128Mi memory to conserve reservations while keeping enough headroom under the fixed 512Mi memory and 1 CPU limits.",
       "replicas": 1
     },
     "source": "live-ai"
