@@ -6,11 +6,11 @@ Each enabled application selects its project, destination namespace and source. 
 
 Global values provide repository/revision, project, destination server and sync policy defaults. Per-application sync policies override those defaults, including explicit `false` values. Optional `namePrefix`, cluster/environment labels, deletion finalizers and ignore rules are configurable. No replica-ignore rules are added automatically: replica plans remain reconciled.
 
-For Idea Board, `helm-overides/argocd-app-controller/custom-values.yaml` enables exactly two Applications. This chart is installed as a small Helm bootstrap release in `argocd`; it creates no controller Pods and no parent Argo Application. Argo CD continues to manage the workloads. Application deletion leaves workloads running by default; `cascadeDeletion` explicitly opts into cascading deletion.
+For Idea Board, the parent Application in `argocd-manifests/idea-board-controller.yaml` points to this chart and loads `helm-overides/argocd-app-controller/custom-values.yaml`. Argo creates and maintains the two service Applications. Do not install this chart separately with Helm.
 
 ```sh
 helm template idea-board-test-apps helm-templates/argocd-app-controller \
   --namespace argocd -f helm-overides/argocd-app-controller/custom-values.yaml
 ```
 
-The scoped AppProject and namespace/credential bootstrap are administered separately. Changing application definitions requires upgrading this Helm bootstrap release. Image/resource changes remain in `helm-overides/idea-fe|idea-be/custom-values.yaml` and reconcile automatically.
+This command only previews the Application definitions. Bootstrap the scoped projects and parent through the private API using `argocd-manifests`. Later definition/value changes are committed to Git and reconciled by Argo. The parent and children have no cascading-deletion finalizers by default; explicit deletion/retirement requires operator care.

@@ -19,7 +19,7 @@ jobs:
       - run: helm lint helm-templates/nucleus -f helm-overides/idea-fe/custom-values.yaml
       - run: helm lint helm-templates/nucleus -f helm-overides/idea-be/custom-values.yaml
       - run: helm lint helm-templates/argocd-app-controller -f helm-overides/argocd-app-controller/custom-values.yaml
-      - name: Validate the two Argo Applications
+      - name: Validate the parent and two service Applications
         run: |
           helm template idea-board-test-apps helm-templates/argocd-app-controller --namespace argocd -f helm-overides/argocd-app-controller/custom-values.yaml > /tmp/idea-board-applications.yaml
           python - <<'PY'
@@ -29,7 +29,10 @@ jobs:
           assert {doc['metadata']['name'] for doc in docs} == {'idea-board-backend','idea-board-frontend'}
           assert all(doc['kind']=='Application' and doc['spec']['project']=='idea-board-test' for doc in docs)
           assert all(not doc.get('spec',{}).get('ignoreDifferences') for doc in docs)
-          print('Exactly two Applications, scoped project and reconciled replicas verified')
+          parent = yaml.safe_load(Path('argocd-manifests/idea-board-controller.yaml').read_text())
+          assert parent['spec']['source']['path'] == 'helm-templates/argocd-app-controller'
+          assert parent['spec']['source']['helm']['valueFiles'] == ['../../helm-overides/argocd-app-controller/custom-values.yaml']
+          print('Parent and two service Applications, scoped project and reconciled replicas verified')
           PY
       - name: Verify chart provenance and rendered workload security
         run: |
@@ -37,6 +40,9 @@ jobs:
           import hashlib, json, subprocess
           from pathlib import Path
           import yaml
+          assert not Path('environments').exists(), 'Release records belong under releases'
+          assert not Path('automation').exists(), 'Health scripts are loaded from pinned source'
+          assert not Path('bootstrap').exists(), 'Parent/project manifests belong in argocd-manifests'
           assert not Path('helm-common').exists(), 'Obsolete chart directory must stay removed'
           assert not Path('bootstrap/idea-board-applications.yaml').exists(), 'Application values belong in helm-overides'
           root = Path('helm-templates/nucleus')
