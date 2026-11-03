@@ -28,11 +28,16 @@ jobs:
           docs = list(yaml.safe_load_all(Path('/tmp/idea-board-applications.yaml').read_text()))
           assert {doc['metadata']['name'] for doc in docs} == {'idea-board-backend','idea-board-frontend'}
           assert all(doc['kind']=='Application' and doc['spec']['project']=='idea-board-test' for doc in docs)
-          assert all(not doc.get('spec',{}).get('ignoreDifferences') for doc in docs)
+          for doc in docs:
+              assert doc['spec']['ignoreDifferences'] == [{'group':'apps','kind':'Deployment','name':doc['metadata']['name'],'namespace':'idea-board-test','jsonPointers':['/spec/replicas']}]
+              assert 'RespectIgnoreDifferences=true' in doc['spec']['syncPolicy']['syncOptions']
+          projects = list(yaml.safe_load_all(Path('argocd-manifests/projects.yaml').read_text()))
+          workload = next(doc for doc in projects if doc['metadata']['name']=='idea-board-test')
+          assert {'group':'autoscaling','kind':'HorizontalPodAutoscaler'} in workload['spec']['namespaceResourceWhitelist']
           parent = yaml.safe_load(Path('argocd-manifests/idea-board-controller.yaml').read_text())
           assert parent['spec']['source']['path'] == 'helm-templates/argocd-app-controller'
           assert parent['spec']['source']['helm']['valueFiles'] == ['../../helm-overides/argocd-app-controller/custom-values.yaml']
-          print('Parent and two service Applications, scoped project and reconciled replicas verified')
+          print('Parent and two service Applications, scoped project and HPA replica ownership verified')
           PY
       - name: Verify chart provenance and rendered workload security
         run: |
@@ -53,7 +58,21 @@ jobs:
               docs = [doc for doc in yaml.safe_load_all(output) if doc]
               assert not any(doc['kind']=='Secret' for doc in docs)
               deployment = next(doc for doc in docs if doc['kind']=='Deployment')
+              assert 'replicas' not in deployment['spec'], 'HPA owns live scale'
+              hpa = next(doc for doc in docs if doc['kind']=='HorizontalPodAutoscaler')
+              assert hpa['apiVersion']=='autoscaling/v2'
+              assert 2 <= hpa['spec']['minReplicas'] <= 3
+              assert hpa['spec']['maxReplicas']==4
+              assert hpa['spec']['scaleTargetRef']['name']==deployment['metadata']['name']
+              assert hpa['spec']['metrics']==[{'type':'Resource','resource':{'name':'cpu','target':{'type':'Utilization','averageUtilization':70}}}]
+              assert hpa['spec']['behavior']['scaleDown']['stabilizationWindowSeconds']==300
+              assert next(doc for doc in docs if doc['kind']=='PodDisruptionBudget')['spec']['minAvailable']==1
               pod = deployment['spec']['template']['spec']
+              labels = deployment['spec']['selector']['matchLabels']
+              terms = pod['affinity']['podAntiAffinity']['preferredDuringSchedulingIgnoredDuringExecution']
+              assert {term['podAffinityTerm']['topologyKey'] for term in terms} == {'kubernetes.io/hostname','topology.kubernetes.io/zone'}
+              assert all(term['podAffinityTerm']['labelSelector']['matchLabels'].items() <= labels.items() for term in terms)
+              assert all(rule['labelSelector']['matchLabels'].items() <= labels.items() for rule in pod['topologySpreadConstraints'])
               assert pod['automountServiceAccountToken'] is False
               for container in pod['containers'] + pod.get('initContainers', []):
                   security = container['securityContext']
@@ -62,5 +81,5 @@ jobs:
                   assert security['allowPrivilegeEscalation'] is False
                   assert 'ALL' in security['capabilities']['drop']
                   assert '@sha256:' in container['image']
-          print('Chart provenance and both hardened Deployments verified')
+          print('Chart provenance, security, HPA bounds and pod placement verified')
           PY

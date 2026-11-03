@@ -32,7 +32,7 @@ Terraform-managed Argo CD controller
 
 The parent points to `helm-templates/argocd-app-controller` and loads `helm-overides/argocd-app-controller/custom-values.yaml`. Argo creates and maintains both children: three Application entries in total. Bootstrap the parent once; later definition/value changes reconcile from Git.
 
-The parent project manages Application resources in `argocd`. The workload project permits approved resources in the app namespace, excluding Secrets and cluster resources. Operators prepare the namespace and credentials separately. Child replicas remain reconciled. Application deletion does not cascade by default because deletion finalizers are not enabled.
+The parent project manages Application resources in `argocd`. The workload project permits approved resources in the app namespace, excluding Secrets and cluster resources. Operators prepare the namespace and credentials separately. Each child permits HPA to manage only its own Deployment `spec.replicas`; all other workload fields and HPA settings remain reconciled. The workload AppProject explicitly permits `autoscaling/HorizontalPodAutoscaler`. Application deletion does not cascade by default because deletion finalizers are not enabled.
 
 ## First-time setup
 
@@ -144,3 +144,40 @@ helm template idea-board-test-apps helm-templates/argocd-app-controller \
 ```
 
 [Validate Helm configuration](.github/workflows/validate.yml) checks chart lint, parent/child definitions, nucleus provenance and rendered workload security. The upstream nucleus README documents chart capabilities; this guide describes its use through Argo.
+
+## Availability and autoscaling
+
+Both `helm-overides/idea-fe/custom-values.yaml` and `helm-overides/idea-be/custom-values.yaml` enable `autoscaling/v2` HPA through the unchanged nucleus chart:
+
+| Setting | Frontend and backend |
+| --- | --- |
+| Minimum / maximum | 2 / 4 pods per service |
+| CPU target | 70% of requested CPU, averaged across service pods |
+| Scale up | 30-second stabilization, at most one additional pod per 60 seconds |
+| Scale down | 300-second stabilization, at most one fewer pod per 60 seconds |
+| Voluntary disruption protection | PDB keeps at least one pod available |
+
+Memory is not a scaling metric here. At a 100m CPU request, the CPU target corresponds to approximately 70m average usage per pod. A lower AI CPU request can therefore cause earlier scaling; these settings need load testing. The AI release publisher can set the minimum to two or three, while preserving the maximum, target and placement rules.
+
+Argo renders each Deployment without `spec.replicas`. Both child Applications have a narrowly scoped ignore rule for that field and `RespectIgnoreDifferences=true`, preventing synchronization from resetting HPA scale. Images, resources, HPA configuration and security settings remain managed by Git. When disabling HPA, also remove those ignore rules and set a fixed `workload.replicaCount` of at least two in the same change.
+
+Pod anti-affinity prefers separate hosts (weight 100) and zones (weight 50). A hostname topology rule uses `maxSkew: 1` and `DoNotSchedule`; the zone rule prefers balance with `ScheduleAnyway`. The selectors match the actual Deployment labels. These rules spread new pods across available nodes; they do not guarantee nodes exist in separate zones or move existing pods automatically when another node joins. Hard anti-affinity would cap replicas at the number of nodes, so it is deliberately avoided. Two workers are the Terraform default; a single-node override removes node-failure protection. Node autoscaling is not installed, and HPA can report pending pods when current capacity is exhausted.
+
+Terraform owns the EKS `metrics-server` add-on and the restricted control-plane-to-Metrics-Server security-group rule. GKE Autopilot provides resource metrics through its managed platform. The namespace quota accommodates both services at their four-pod cap plus one rolling-update surge pod per service. Rollback preserves current HPA bounds and scheduling rules even when recovering an older single-replica snapshot.
+
+After provisioning and Argo synchronization, verify with an authorized cluster context:
+
+```sh
+kubectl get nodes -L topology.kubernetes.io/zone
+kubectl -n kube-system rollout status deployment/metrics-server
+kubectl get apiservice v1beta1.metrics.k8s.io
+kubectl top nodes
+kubectl -n idea-board-test top pods
+kubectl -n idea-board-test get hpa
+kubectl -n idea-board-test describe hpa idea-board-frontend
+kubectl -n idea-board-test describe hpa idea-board-backend
+kubectl -n idea-board-test get pods -o wide
+kubectl -n idea-board-test get pdb
+```
+
+Look for Metrics API `Available=True`, HPA `AbleToScale=True` / `ScalingActive=True`, numeric CPU targets instead of `<unknown>`, and service replicas on different hosts. Use a controlled load test in the test environment to observe scale-up and the five-minute scale-down window; frontend static traffic may need substantial concurrency to raise CPU. Check scheduling events if pods remain Pending. Verify a node drain only after confirming capacity and replacement readiness. These runtime checks require a running cluster and have not been executed against the deleted test stack.

@@ -43,3 +43,5 @@ spec:
     kind: NetworkPolicy
   - group: policy
     kind: PodDisruptionBudget
+  - group: autoscaling
+    kind: HorizontalPodAutoscaler

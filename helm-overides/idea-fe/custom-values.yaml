@@ -7,7 +7,7 @@ image:
 workload:
   enabled: true
   kind: Deployment
-  replicaCount: 1
+  replicaCount: 2
   deployment:
     strategy:
       type: RollingUpdate
@@ -100,9 +100,53 @@ podAnnotations:
 topologySpreadConstraints:
 - maxSkew: 1
   topologyKey: kubernetes.io/hostname
+  whenUnsatisfiable: DoNotSchedule
+  labelSelector:
+    matchLabels:
+      app.kubernetes.io/instance: idea-board-frontend
+- maxSkew: 1
+  topologyKey: topology.kubernetes.io/zone
   whenUnsatisfiable: ScheduleAnyway
   labelSelector:
     matchLabels:
       app.kubernetes.io/instance: idea-board-frontend
 commonAnnotations:
   argocd.argoproj.io/sync-wave: '10'
+autoscaling:
+  enabled: true
+  type: hpa
+  minReplicas: 2
+  maxReplicas: 4
+  hpa:
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 0
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      selectPolicy: Max
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Min
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: idea-board-frontend
+        topologyKey: kubernetes.io/hostname
+    - weight: 50
+      podAffinityTerm:
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: idea-board-frontend
+        topologyKey: topology.kubernetes.io/zone

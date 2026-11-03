@@ -11,14 +11,42 @@ applications:
     namespace: idea-board-test
     releaseName: idea-board-backend
     helmValuesFiles:
-      - ../../helm-overides/idea-be/custom-values.yaml
+    - ../../helm-overides/idea-be/custom-values.yaml
     additionalSources:
-      - path: argocd-manifests/idea-board-aws-test
-        directory:
-          include: controls.yaml
+    - path: argocd-manifests/idea-board-aws-test
+      directory:
+        include: controls.yaml
+    ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: idea-board-backend
+      namespace: idea-board-test
+      jsonPointers:
+      - /spec/replicas
+    syncPolicy:
+      syncOptions:
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+      - FailOnSharedResource=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
   idea-board-frontend:
     enabled: true
     namespace: idea-board-test
     releaseName: idea-board-frontend
     helmValuesFiles:
-      - ../../helm-overides/idea-fe/custom-values.yaml
+    - ../../helm-overides/idea-fe/custom-values.yaml
+    ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: idea-board-frontend
+      namespace: idea-board-test
+      jsonPointers:
+      - /spec/replicas
+    syncPolicy:
+      syncOptions:
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+      - FailOnSharedResource=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
