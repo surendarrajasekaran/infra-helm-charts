@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: surendarrajasekaran/om-idea-board
-          ref: e748d48a6e00b65b22fde707b2389db2863b39e0
+          ref: 31656dc7860b9f46a31ad619eea6e95bd2c44cf9
           path: artifacts/health-tools
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
